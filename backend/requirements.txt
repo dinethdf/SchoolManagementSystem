@@ -1,0 +1,23 @@
+# Python package dependencies for the School Management System Backend
+# Install all packages using: pip install -r requirements.txt
+
+# The core Django web framework
+Django>=5.0.0
+
+# Django REST Framework — adds REST API capabilities to Django
+djangorestframework>=3.15.0
+
+# Simple JWT — JSON Web Token authentication for Django REST Framework
+djangorestframework-simplejwt>=5.3.0
+
+# PyJWT — pure-Python JWT encoding/decoding using Python standard library HMAC-SHA256
+PyJWT>=2.8.0
+
+# Django CORS Headers — allows our React frontend (running on Vite :5173) to access this backend API
+django-cors-headers>=4.4.0
+
+# Python Decouple — helps read secret configuration values from .env file safely
+python-decouple>=3.8
+
+# PyMySQL — pure Python MySQL client (works reliably on all Windows machines without C++ build tools)
+PyMySQL>=1.1.0

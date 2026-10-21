@@ -47,7 +47,7 @@ This project is built as an undergraduate Final Year Project. The codebase stric
                                              ┌───────────────────────────┼───────────────────┐
                                              │                           │                   │
                                     ┌────────▼──────┐          ┌────────▼──────┐   ┌─────────▼──────┐
-                                    │  PostgreSQL   │          │ Email Service │   │  LLM API       │
+                                    │    MySQL      │          │ Email Service │   │  LLM API       │
                                     │  (Database)   │          │    (SMTP)     │   │  (AI Summary)  │
                                     └───────────────┘          └───────────────┘   └────────────────┘
 ```
@@ -64,7 +64,7 @@ This project is built as an undergraduate Final Year Project. The codebase stric
 | **API Client** | Axios + TanStack Query (React Query v5) |
 | **Backend** | Python 3.11 + Django 5 + Django REST Framework |
 | **Auth** | JWT via `djangorestframework-simplejwt` |
-| **Database** | PostgreSQL |
+| **Database** | MySQL |
 | **Task Queue** | Celery + Redis *(optional)* |
 | **AI** | LLM API *(provider TBD)* |
 | **Deployment** | Frontend: Vercel |
@@ -90,7 +90,7 @@ SchoolManagementSystem/
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
-- PostgreSQL 15+
+- MySQL 8.0+
 
 ### Manual Setup
 **Frontend (React/Vite):**
@@ -117,7 +117,7 @@ python manage.py runserver  # → http://localhost:8000
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Authentication & Authorization | 🟢 MVP |
+| 1 | Authentication & Authorization | 🟢 Backend Implemented |
 | 2 | User Management | 🟡 MVP (details pending) |
 | 3 | Class & Subject Management | 🟢 MVP |
 | 4 | Student Management | 🟡 MVP (details pending) |

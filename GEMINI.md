@@ -11,7 +11,7 @@
 - **System:** School Management System (SMS)
 - **Frontend:** React (JavaScript) + Vite + Tailwind CSS
 - **Backend:** Python 3.11 + Django 5 + Django REST Framework
-- **Database:** PostgreSQL
+- **Database:** MySQL
 - **Auth:** JWT via `djangorestframework-simplejwt`
 - **API Client:** Axios + TanStack Query (React Query v5)
 - **Forms:** React Hook Form
@@ -231,7 +231,7 @@ frontend/src/
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Authentication & Authorization | 🟢 MVP Planned |
+| 1 | Authentication & Authorization | 🟢 Backend Implemented |
 | 2 | User Management | 🟡 Needs Details |
 | 3 | Class & Subject Management | 🟢 MVP Planned |
 | 4 | Student Management | 🟡 Needs Details |
