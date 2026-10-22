@@ -118,9 +118,9 @@ python manage.py runserver  # → http://localhost:8000
 | # | Feature | Status |
 |---|---|---|
 | 1 | Authentication & Authorization | 🟢 Backend Implemented |
-| 2 | User Management | 🟡 MVP (details pending) |
-| 3 | Class & Subject Management | 🟢 MVP |
-| 4 | Student Management | 🟡 MVP (details pending) |
+| 2 | User Management | 🟢 Backend Implemented |
+| 3 | Class & Subject Management | 🟢 Backend Implemented |
+| 4 | Student Management | 🟢 Backend Implemented |
 | 5 | Attendance System | 🟡 MVP (needs input) |
 | 6 | Grades / Result Management | 🟢 MVP |
 | 7 | Role-specific Dashboards | 🟡 MVP (deferred) |

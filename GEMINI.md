@@ -232,9 +232,9 @@ frontend/src/
 | # | Feature | Status |
 |---|---|---|
 | 1 | Authentication & Authorization | 🟢 Backend Implemented |
-| 2 | User Management | 🟡 Needs Details |
-| 3 | Class & Subject Management | 🟢 MVP Planned |
-| 4 | Student Management | 🟡 Needs Details |
+| 2 | User Management | 🟢 Backend Implemented |
+| 3 | Class & Subject Management | 🟢 Backend Implemented |
+| 4 | Student Management | 🟢 Backend Implemented |
 | 5 | Attendance System | 🟡 Needs Input |
 | 6 | Grades / Result Management | 🟢 MVP Planned |
 | 7 | Role-specific Dashboards | 🟡 Deferred |

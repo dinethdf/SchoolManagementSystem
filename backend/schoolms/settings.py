@@ -50,6 +50,8 @@ INSTALLED_APPS = [
 
     # Custom project apps
     'apps.authentication.apps.AuthenticationConfig',  # User accounts, roles & auth
+    'apps.academics.apps.AcademicsConfig',            # Classes, grade levels, and subjects
+    'apps.people.apps.PeopleConfig',                  # Students, teachers, and parent profiles
     'apps.demo.apps.DemoConfig',                      # Learning samples and demos (no DB required)
 ]
 

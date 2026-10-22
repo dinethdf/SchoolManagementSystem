@@ -43,6 +43,12 @@ urlpatterns = [
     # Authentication App Endpoints (login, register, token refresh, current user profile)
     path('api/auth/', include('apps.authentication.urls')),
 
+    # Academics App Endpoints (classes, subjects, and schedules)
+    path('api/academics/', include('apps.academics.urls')),
+
+    # People App Endpoints (student profiles, teacher profiles, parent profiles)
+    path('api/people/', include('apps.people.urls')),
+
     # Learning Demo Endpoints (standalone logic demos, no database required)
     path('api/demo/', include('apps.demo.urls')),
 ]
