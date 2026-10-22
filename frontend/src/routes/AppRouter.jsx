@@ -1,10 +1,10 @@
-import React from 'react';
-
 /**
- * Main Application Router Configuration
- * Maps routes to page components, wrapping them in ProtectedRoute and RoleRoute as needed.
+ * Main Application Router Entry
+ * 
+ * Re-exports the AppRoutes component so it can be imported
+ * either from './routes' or './routes/AppRouter'.
  */
+import AppRoutes from './index';
 
-export const AppRouter = () => {
-  return <div>App Router Placeholder</div>;
-};
+export default AppRoutes;
+export { AppRoutes as AppRouter };

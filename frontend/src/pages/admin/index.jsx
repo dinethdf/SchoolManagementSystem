@@ -1,8 +1,8 @@
-import React from 'react';
-
 /**
- * Admin Dashboard Page Component
+ * Admin Pages Entry Point
+ * 
+ * Re-exports the AdminDashboard page for convenient imports.
  */
-export default function AdminDashboard() {
-  return <div>Admin Dashboard Placeholder</div>;
-}
+import AdminDashboard from '../AdminDashboard';
+
+export default AdminDashboard;

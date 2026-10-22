@@ -202,13 +202,13 @@ If an agent violates any of these rules, the project owner should flag it immedi
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Authentication & Authorization | 🟢 MVP Planned |
-| 2 | User Management | 🟡 Needs Details |
-| 3 | Class & Subject Management | 🟢 MVP Planned |
-| 4 | Student Management | 🟡 Needs Details |
-| 5 | Attendance System | 🟡 Needs Input |
-| 6 | Grades / Result Management | 🟢 MVP Planned |
-| 7 | Role-specific Dashboards | 🟡 Deferred |
+| 1 | Authentication & Authorization (Backend + Frontend) | 🟢 Implemented (JWT + Role Guards + Login UI) |
+| 2 | User Management | 🟢 Backend Implemented |
+| 3 | Class & Subject Management (Academics) | 🟢 Backend Implemented + Frontend Service |
+| 4 | People Profiles (Students, Teachers, Parents) | 🟢 Backend Implemented + Frontend Service |
+| 5 | Role-Specific Dashboards (Admin, Teacher, Student, Parent) | 🟢 Frontend Implemented (Responsive + Cards) |
+| 6 | Attendance System | 🟡 Next Planned Feature |
+| 7 | Grades / Result Management | 🟢 MVP Planned |
 | 8 | Assignments / Homework | 🟢 Post-MVP |
 | 9 | Fee Management | 🟢 Post-MVP |
 | 10 | Announcements | 🟢 Post-MVP |
@@ -219,4 +219,5 @@ If an agent violates any of these rules, the project owner should flag it immedi
 
 ---
 
-*Last updated: 2026-08-05 | All agents must re-read this file before starting any work.*
+*Last updated: 2026-10-22 | All agents must re-read this file before starting any work.*
+

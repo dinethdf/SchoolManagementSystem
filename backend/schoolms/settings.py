@@ -212,10 +212,10 @@ SIMPLE_JWT = {
 # 10. CORS (CROSS-ORIGIN RESOURCE SHARING)
 # ==============================================================================
 
-# Allows the React frontend (running on Vite, port 5173) to communicate with this backend
+# Allows the React frontend (running on Vite, port 5173 or 3000) to communicate with this backend
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173',
+    default='http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000',
     cast=Csv()
 )
 

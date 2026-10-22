@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+// Import Tailwind CSS styling
+import './index.css';
 
 /**
  * Entry point for the React application.
