@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # Custom project apps
     'apps.authentication.apps.AuthenticationConfig',  # User accounts, roles & auth
+    'apps.demo.apps.DemoConfig',                      # Learning samples and demos (no DB required)
 ]
 
 

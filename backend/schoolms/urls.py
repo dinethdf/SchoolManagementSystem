@@ -42,6 +42,9 @@ urlpatterns = [
 
     # Authentication App Endpoints (login, register, token refresh, current user profile)
     path('api/auth/', include('apps.authentication.urls')),
+
+    # Learning Demo Endpoints (standalone logic demos, no database required)
+    path('api/demo/', include('apps.demo.urls')),
 ]
 
 # In development mode, serve user-uploaded media files (profile pictures, attachments)
