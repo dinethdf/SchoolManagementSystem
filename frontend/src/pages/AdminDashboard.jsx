@@ -59,15 +59,44 @@ export default function AdminDashboard() {
   }
 
   // -----------------------------------------------------------
-  // Step 2: Calculate Counts Safely
+  // Step 2: Calculate Counts Safely from API Responses
   // -----------------------------------------------------------
-  const classList = Array.isArray(classesQuery.data) ? classesQuery.data : [];
-  const studentList = Array.isArray(studentsQuery.data) ? studentsQuery.data : [];
-  const teacherList = Array.isArray(teachersQuery.data) ? teachersQuery.data : [];
+  // Support both raw arrays and { success, total_count, classes: [...] } objects
+  let classList = [];
+  if (Array.isArray(classesQuery.data)) {
+    classList = classesQuery.data;
+  } else if (classesQuery.data && Array.isArray(classesQuery.data.classes)) {
+    classList = classesQuery.data.classes;
+  }
 
-  const totalClassesCount = classList.length;
-  const totalStudentsCount = studentList.length;
-  const totalTeachersCount = teacherList.length;
+  let studentList = [];
+  if (Array.isArray(studentsQuery.data)) {
+    studentList = studentsQuery.data;
+  } else if (studentsQuery.data && Array.isArray(studentsQuery.data.students)) {
+    studentList = studentsQuery.data.students;
+  }
+
+  let teacherList = [];
+  if (Array.isArray(teachersQuery.data)) {
+    teacherList = teachersQuery.data;
+  } else if (teachersQuery.data && Array.isArray(teachersQuery.data.teachers)) {
+    teacherList = teachersQuery.data.teachers;
+  }
+
+  const totalClassesCount =
+    classesQuery.data && classesQuery.data.total_count !== undefined
+      ? classesQuery.data.total_count
+      : classList.length;
+
+  const totalStudentsCount =
+    studentsQuery.data && studentsQuery.data.total_count !== undefined
+      ? studentsQuery.data.total_count
+      : studentList.length;
+
+  const totalTeachersCount =
+    teachersQuery.data && teachersQuery.data.total_count !== undefined
+      ? teachersQuery.data.total_count
+      : teacherList.length;
 
   return (
     <div className="space-y-6">

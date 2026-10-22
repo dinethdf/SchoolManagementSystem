@@ -95,8 +95,9 @@ export default function LoginForm() {
 
       if (apiError.response && apiError.response.data) {
         const errorData = apiError.response.data;
-        // Check for specific backend error messages
-        if (errorData.detail) {
+        if (errorData.message) {
+          userFriendlyMessage = errorData.message;
+        } else if (errorData.detail) {
           userFriendlyMessage = errorData.detail;
         } else if (errorData.error) {
           userFriendlyMessage = errorData.error;

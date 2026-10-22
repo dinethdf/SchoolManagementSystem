@@ -67,6 +67,8 @@ class RegisterView(APIView):
             {
                 'success': True,
                 'message': 'Account created successfully! Welcome to the School Management System.',
+                'access': str(auth_tokens['access_token']),
+                'refresh': str(auth_tokens['refresh_token']),
                 'tokens': auth_tokens,
                 'user': user_profile_data,
             },
@@ -136,6 +138,8 @@ class LoginView(APIView):
             {
                 'success': True,
                 'message': 'Login successful!',
+                'access': str(auth_tokens['access_token']),
+                'refresh': str(auth_tokens['refresh_token']),
                 'tokens': auth_tokens,
                 'user': user_profile_data,
             },
