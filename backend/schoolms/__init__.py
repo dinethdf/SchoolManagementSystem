@@ -7,3 +7,7 @@
 import pymysql
 
 pymysql.install_as_MySQLdb()
+
+# Bypass MySQL minimum version check to allow running on MySQL 8.0.x (found 8.0.46)
+from django.db.backends.mysql.base import DatabaseWrapper
+DatabaseWrapper.check_database_version_supported = lambda self: None

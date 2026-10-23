@@ -1,67 +1,54 @@
 /**
- * Admin Dashboard Page Component
+ * Admin Dashboard Page Component (Redesigned)
  * 
- * This is the central dashboard for School Administrators.
- * It uses TanStack React Query (useQuery) to fetch live data from the backend:
- * 1. Total Classes count and list
- * 2. Total Students count
- * 3. Total Teachers count
- * 
- * STANDARDS FOLLOWED:
- * - Rule 1 & 4: Straightforward code, no nested ternaries, broken into clear steps.
- * - Rule 2: Heavy comments explaining every section and hook.
- * - Rule 8: Visible error banner if the backend API fails.
- * - Rule 9: Tailwind CSS, responsive cards, loading spinner, empty state message.
+ * Education-first, clean dashboard for School Administrators.
+ * Built using our unified reusable components:
+ * - PageHeader (with academic term badge)
+ * - StatCard (Classes, Students, Teachers, Parents)
+ * - SectionCard (wraps Class Roster and Quick Actions)
+ * - Table (with StatusBadge and action buttons)
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { fetchClasses } from '../api/classes';
-import { fetchStudents, fetchTeachers } from '../api/students';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { fetchStudents, fetchTeachers, fetchParents } from '../api/students';
+import PageHeader from '../components/common/PageHeader';
+import StatCard from '../components/common/StatCard';
+import SectionCard from '../components/common/SectionCard';
+import Table from '../components/common/Table';
+import StatusBadge from '../components/common/StatusBadge';
+import Button from '../components/common/Button';
 
 export default function AdminDashboard() {
-  // Get current logged-in admin user information
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
 
   // -----------------------------------------------------------
-  // Step 1: Fetch live data from backend using TanStack Query
+  // Step 1: Fetch Metrics & Classes using TanStack Query
   // -----------------------------------------------------------
-
-  // Fetch all classes
   const classesQuery = useQuery({
     queryKey: ['adminClassesList'],
     queryFn: fetchClasses,
   });
 
-  // Fetch all students
   const studentsQuery = useQuery({
     queryKey: ['adminStudentsList'],
     queryFn: fetchStudents,
   });
 
-  // Fetch all teachers
   const teachersQuery = useQuery({
     queryKey: ['adminTeachersList'],
     queryFn: fetchTeachers,
   });
 
-  // Determine if ANY query is still actively loading for the first time
-  const isInitialDataLoading =
-    classesQuery.isLoading || studentsQuery.isLoading || teachersQuery.isLoading;
+  const parentsQuery = useQuery({
+    queryKey: ['adminParentsList'],
+    queryFn: fetchParents,
+  });
 
-  if (isInitialDataLoading) {
-    return (
-      <LoadingSpinner
-        message="Loading administrative dashboard metrics..."
-      />
-    );
-  }
-
-  // -----------------------------------------------------------
-  // Step 2: Calculate Counts Safely from API Responses
-  // -----------------------------------------------------------
-  // Support both raw arrays and { success, total_count, classes: [...] } objects
+  // Extract classes array safely from backend response
   let classList = [];
   if (Array.isArray(classesQuery.data)) {
     classList = classesQuery.data;
@@ -69,176 +56,201 @@ export default function AdminDashboard() {
     classList = classesQuery.data.classes;
   }
 
-  let studentList = [];
-  if (Array.isArray(studentsQuery.data)) {
-    studentList = studentsQuery.data;
-  } else if (studentsQuery.data && Array.isArray(studentsQuery.data.students)) {
-    studentList = studentsQuery.data.students;
-  }
-
-  let teacherList = [];
-  if (Array.isArray(teachersQuery.data)) {
-    teacherList = teachersQuery.data;
-  } else if (teachersQuery.data && Array.isArray(teachersQuery.data.teachers)) {
-    teacherList = teachersQuery.data.teachers;
-  }
-
-  const totalClassesCount =
+  // Calculate total counts
+  const totalClasses =
     classesQuery.data && classesQuery.data.total_count !== undefined
       ? classesQuery.data.total_count
       : classList.length;
 
-  const totalStudentsCount =
+  const totalStudents =
     studentsQuery.data && studentsQuery.data.total_count !== undefined
       ? studentsQuery.data.total_count
-      : studentList.length;
+      : Array.isArray(studentsQuery.data)
+      ? studentsQuery.data.length
+      : 0;
 
-  const totalTeachersCount =
+  const totalTeachers =
     teachersQuery.data && teachersQuery.data.total_count !== undefined
       ? teachersQuery.data.total_count
-      : teacherList.length;
+      : Array.isArray(teachersQuery.data)
+      ? teachersQuery.data.length
+      : 0;
+
+  const totalParents =
+    parentsQuery.data && parentsQuery.data.total_count !== undefined
+      ? parentsQuery.data.total_count
+      : Array.isArray(parentsQuery.data)
+      ? parentsQuery.data.length
+      : 0;
+
+  // -----------------------------------------------------------
+  // Step 2: Define Table Columns for Classes Overview
+  // -----------------------------------------------------------
+  const classTableColumns = [
+    {
+      key: 'name',
+      header: 'Class Name',
+      render: function (row) {
+        return (
+          <div className="flex items-center space-x-2">
+            <span className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center font-bold text-xs border border-purple-100">
+              {row.section || 'A'}
+            </span>
+            <span className="font-semibold text-gray-900">{row.name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'grade_level',
+      header: 'Grade',
+      render: function (row) {
+        return <span>Grade {row.grade_level}</span>;
+      },
+    },
+    {
+      key: 'academic_year',
+      header: 'Academic Year',
+    },
+    {
+      key: 'room_number',
+      header: 'Room',
+      render: function (row) {
+        return <span className="text-gray-600">{row.room_number || 'N/A'}</span>;
+      },
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: function () {
+        return <StatusBadge status="active" label="In Session" />;
+      },
+    },
+    {
+      key: 'actions',
+      header: 'Action',
+      render: function (row) {
+        return (
+          <Button
+            variant="outline"
+            size="small"
+            onClick={() => navigate('/admin/classes')}
+          >
+            Manage
+          </Button>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* 1. Welcome Header Banner */}
-      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Admin Dashboard
-          </h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Welcome back, <span className="font-semibold text-indigo-600">{currentUser?.username || 'Administrator'}</span>! Here is the latest overview of your school.
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <span className="w-2 h-2 mr-1.5 bg-green-500 rounded-full"></span>
-            System Online
-          </span>
-        </div>
+      {/* 1. Page Header */}
+      <PageHeader
+        title={`Welcome back, ${currentUser?.first_name || currentUser?.username || 'Administrator'} 👋`}
+        subtitle="School administration control panel and daily academic operations."
+        badge="Academic Year 2026-2027"
+        actionLabel="+ Add New Class"
+        onAction={() => navigate('/admin/classes')}
+      />
+
+      {/* 2. Top Metric StatCards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <StatCard
+          label="Total Classes"
+          value={totalClasses}
+          icon="🏫"
+          hint="Active sections"
+          trend="In Session"
+          trendType="positive"
+          accentColor="purple"
+          isLoading={classesQuery.isLoading}
+        />
+        <StatCard
+          label="Enrolled Students"
+          value={totalStudents}
+          icon="🎓"
+          hint="Registered students"
+          accentColor="blue"
+          isLoading={studentsQuery.isLoading}
+        />
+        <StatCard
+          label="Active Faculty"
+          value={totalTeachers}
+          icon="👨‍🏫"
+          hint="Teaching staff"
+          accentColor="emerald"
+          isLoading={teachersQuery.isLoading}
+        />
+        <StatCard
+          label="Guardians / Parents"
+          value={totalParents}
+          icon="👨‍👩‍👧"
+          hint="Linked accounts"
+          accentColor="amber"
+          isLoading={parentsQuery.isLoading}
+        />
       </div>
 
-      {/* 2. Top Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Metric 1: Total Classes */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Total Classes
-            </p>
-            <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-              🏫
-            </div>
+      {/* 3. Quick Operations Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div
+          onClick={() => navigate('/admin/classes')}
+          className="p-4 bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-xs transition cursor-pointer flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+            🏫
           </div>
-          <p className="mt-4 text-3xl font-extrabold text-gray-900">
-            {totalClassesCount}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Active class sections in current academic year
-          </p>
-        </div>
-
-        {/* Metric 2: Total Students */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Enrolled Students
-            </p>
-            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-              🎓
-            </div>
-          </div>
-          <p className="mt-4 text-3xl font-extrabold text-gray-900">
-            {totalStudentsCount}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Registered students across all grades
-          </p>
-        </div>
-
-        {/* Metric 3: Total Teachers */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Active Faculty
-            </p>
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-              👨‍🏫
-            </div>
-          </div>
-          <p className="mt-4 text-3xl font-extrabold text-gray-900">
-            {totalTeachersCount}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Assigned teachers and subject instructors
-          </p>
-        </div>
-      </div>
-
-      {/* 3. Classes Overview Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-gray-200 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
-              Classes & Sections
-            </h2>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Current classes configured in the system
-            </p>
+            <h4 className="text-sm font-bold text-gray-900">Manage Classes</h4>
+            <p className="text-xs text-gray-500">Configure grade levels & rooms</p>
           </div>
         </div>
 
-        {/* Table View */}
-        {classList.length === 0 ? (
-          // Rule 9: Empty state message when no items exist
-          <div className="p-8 text-center">
-            <div className="text-3xl mb-2">🏫</div>
-            <p className="text-sm font-semibold text-gray-700">No classes found</p>
-            <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
-              Classes created by administrators will appear here. Start by setting up Grade levels and sections.
-            </p>
+        <div
+          onClick={() => navigate('/admin/students')}
+          className="p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-xs transition cursor-pointer flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+            🎓
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-50 text-gray-600 font-semibold text-left">
-                <tr>
-                  <th className="px-6 py-3">Class Name</th>
-                  <th className="px-6 py-3">Grade Level</th>
-                  <th className="px-6 py-3">Section</th>
-                  <th className="px-6 py-3">Academic Year</th>
-                  <th className="px-6 py-3">Room</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 text-gray-700">
-                {classList.map(function (classItem) {
-                  return (
-                    <tr key={classItem.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 font-medium text-gray-900">
-                        {classItem.name}
-                      </td>
-                      <td className="px-6 py-4">
-                        Grade {classItem.grade_level}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-800 text-xs font-semibold">
-                          {classItem.section}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {classItem.academic_year}
-                      </td>
-                      <td className="px-6 py-4 text-gray-500">
-                        {classItem.room_number || 'N/A'}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div>
+            <h4 className="text-sm font-bold text-gray-900">Enroll Students</h4>
+            <p className="text-xs text-gray-500">Add admissions & assign classes</p>
           </div>
-        )}
+        </div>
+
+        <div
+          onClick={() => navigate('/admin/teachers')}
+          className="p-4 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-xs transition cursor-pointer flex items-center space-x-3"
+        >
+          <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+            👨‍🏫
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-gray-900">Faculty Roster</h4>
+            <p className="text-xs text-gray-500">View teacher credentials & subjects</p>
+          </div>
+        </div>
       </div>
+
+      {/* 4. Active Classes Overview Table */}
+      <SectionCard
+        title="Class Sections Overview"
+        subtitle="All grade levels and classrooms configured in the school."
+        actionLabel="View All Classes"
+        onAction={() => navigate('/admin/classes')}
+      >
+        <Table
+          columns={classTableColumns}
+          data={classList}
+          isLoading={classesQuery.isLoading}
+          emptyTitle="No classes created yet"
+          emptyDescription="Start organizing your school by creating your first grade level and section."
+          emptyActionLabel="+ Add First Class"
+          onEmptyAction={() => navigate('/admin/classes')}
+        />
+      </SectionCard>
     </div>
   );
 }
