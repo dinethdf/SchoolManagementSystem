@@ -1,13 +1,13 @@
 /**
- * Teacher Dashboard Page Component (Redesigned)
+ * Teacher Dashboard Page Component
  * 
  * Central hub for teaching faculty:
- * - PageHeader with greeting and quick attendance CTA
- * - StatCards for assigned classes, attendance status, and subjects
- * - High-priority action cards for daily attendance and grade entry
- * - Assigned Classes SectionCard
+ * - Live stats for assigned classes, active assessments, and attendance records
+ * - Quick action buttons for marking daily attendance and submitting grades
+ * - Assigned Classes summary list
  */
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import PageHeader from '../../components/common/PageHeader';
@@ -15,10 +15,43 @@ import StatCard from '../../components/common/StatCard';
 import SectionCard from '../../components/common/SectionCard';
 import Button from '../../components/common/Button';
 import StatusBadge from '../../components/common/StatusBadge';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { fetchClasses } from '../../api/classes';
+import { fetchAssessments } from '../../api/grades';
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+
+  const [classList, setClassList] = useState([]);
+  const [assessmentsCount, setAssessmentsCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadTeacherDashboardMetrics() {
+      try {
+        setIsLoading(true);
+        const [classesRes, assessmentsRes] = await Promise.all([
+          fetchClasses(),
+          fetchAssessments(),
+        ]);
+
+        const classes = classesRes?.classes || (Array.isArray(classesRes) ? classesRes : []);
+        const assessments = assessmentsRes?.assessments || (Array.isArray(assessmentsRes) ? assessmentsRes : []);
+
+        setClassList(classes);
+        setAssessmentsCount(assessments.length);
+      } catch (err) {
+        // Fallback gracefully if API calls fail
+        setClassList([]);
+        setAssessmentsCount(0);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadTeacherDashboardMetrics();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -32,31 +65,39 @@ export default function TeacherDashboard() {
       />
 
       {/* 2. Top Statistic Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <StatCard
-          label="My Assigned Classes"
-          value="1 Class"
-          icon="🏫"
-          hint="Grade 10-A (Class Teacher)"
-          accentColor="emerald"
-        />
-        <StatCard
-          label="Today's Attendance"
-          value="Pending"
-          icon="📅"
-          hint="Due before 11:00 AM"
-          trend="Required Daily"
-          trendType="negative"
-          accentColor="amber"
-        />
-        <StatCard
-          label="Teaching Subjects"
-          value="1 Subject"
-          icon="📖"
-          hint="Mathematics (MATH-10)"
-          accentColor="indigo"
-        />
-      </div>
+      {isLoading ? (
+        <div className="py-8 flex justify-center">
+          <LoadingSpinner text="Updating dashboard metrics..." />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <StatCard
+            label="My Assigned Classes"
+            value={`${classList.length} ${classList.length === 1 ? 'Class' : 'Classes'}`}
+            icon="🏫"
+            hint={classList[0]?.name ? `${classList[0].name} (Class Teacher)` : 'Active School Classes'}
+            accentColor="emerald"
+          />
+          <StatCard
+            label="Active Assessments"
+            value={`${assessmentsCount} Tests`}
+            icon="📝"
+            hint="Scheduled evaluations"
+            trend="Ongoing Term"
+            trendType="positive"
+            accentColor="indigo"
+          />
+          <StatCard
+            label="Daily Attendance"
+            value="Active"
+            icon="📅"
+            hint="Ready for daily recording"
+            trend="Live"
+            trendType="positive"
+            accentColor="amber"
+          />
+        </div>
+      )}
 
       {/* 3. Primary Action Highlight Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -68,7 +109,7 @@ export default function TeacherDashboard() {
             </div>
             <h3 className="text-xl font-bold">Mark Today's Attendance</h3>
             <p className="mt-1 text-sm text-emerald-100">
-              Record present, absent, and late students for Grade 10-A. Automatic notification sent to parents.
+              Record present, absent, and late students for your classes with one-click toggles.
             </p>
           </div>
           <div className="mt-6">
@@ -91,7 +132,7 @@ export default function TeacherDashboard() {
             </div>
             <h3 className="text-xl font-bold">Enter Term Grades</h3>
             <p className="mt-1 text-sm text-indigo-100">
-              Submit test marks, midterm scores, and final report card remarks for your enrolled students.
+              Create tests, input exam marks, and preview student letter grades with automated evaluation.
             </p>
           </div>
           <div className="mt-6">
@@ -109,33 +150,42 @@ export default function TeacherDashboard() {
 
       {/* 4. Assigned Class Details Card */}
       <SectionCard
-        title="My Assigned Classes"
-        subtitle="Students enrolled under your direct supervision."
+        title="Class Roster Directory"
+        subtitle="School classrooms and batches available for your supervision."
       >
-        <div className="p-5 border-b border-gray-100 last:border-b-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-base border border-emerald-200">
-              10-A
-            </div>
-            <div>
-              <h4 className="text-base font-bold text-gray-900">Grade 10-A</h4>
-              <p className="text-xs text-gray-500">
-                Room 101 &bull; 1 Enrolled Student &bull; Academic Year 2026-2027
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <StatusBadge status="active" label="Class Teacher" />
-            <Button
-              variant="outline"
-              size="small"
-              onClick={() => navigate('/teacher/classes')}
+        {classList.length === 0 ? (
+          <p className="p-6 text-sm text-slate-500">No classes found in the system.</p>
+        ) : (
+          classList.map((classItem) => (
+            <div
+              key={classItem.id}
+              className="p-5 border-b border-gray-100 last:border-b-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
             >
-              View Roster
-            </Button>
-          </div>
-        </div>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-base border border-emerald-200">
+                  {classItem.grade_level}-{classItem.section}
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-gray-900">{classItem.name}</h4>
+                  <p className="text-xs text-gray-500">
+                    Room {classItem.room_number || 'N/A'} &bull; Academic Year {classItem.academic_year}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <StatusBadge status="active" label="Class Active" />
+                <Button
+                  variant="outline"
+                  size="small"
+                  onClick={() => navigate('/teacher/attendance')}
+                >
+                  Take Attendance
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </SectionCard>
     </div>
   );

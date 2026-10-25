@@ -46,10 +46,18 @@ import StudentsPage from '../pages/admin/StudentsPage';
 import TeachersPage from '../pages/admin/TeachersPage';
 import ParentsPage from '../pages/admin/ParentsPage';
 
-// Role Dashboards
+// Role Dashboards & Feature Pages
 import TeacherDashboard from '../pages/teacher';
+import TeacherAttendancePage from '../pages/teacher/AttendancePage';
+import TeacherGradesPage from '../pages/teacher/GradesPage';
+
 import StudentDashboard from '../pages/student';
+import StudentAttendancePage from '../pages/student/AttendancePage';
+import StudentGradesPage from '../pages/student/GradesPage';
+
 import ParentDashboard from '../pages/parent';
+import ParentAttendancePage from '../pages/parent/AttendancePage';
+import ParentGradesPage from '../pages/parent/GradesPage';
 
 export default function AppRoutes() {
   return (
@@ -80,6 +88,8 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.TEACHER]} />}>
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />
+          <Route path="attendance" element={<TeacherAttendancePage />} />
+          <Route path="grades" element={<TeacherGradesPage />} />
         </Route>
       </Route>
 
@@ -89,6 +99,8 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.STUDENT]} />}>
         <Route path="/student" element={<StudentLayout />}>
           <Route index element={<StudentDashboard />} />
+          <Route path="attendance" element={<StudentAttendancePage />} />
+          <Route path="grades" element={<StudentGradesPage />} />
         </Route>
       </Route>
 
@@ -98,6 +110,8 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.PARENT]} />}>
         <Route path="/parent" element={<ParentLayout />}>
           <Route index element={<ParentDashboard />} />
+          <Route path="attendance" element={<ParentAttendancePage />} />
+          <Route path="grades" element={<ParentGradesPage />} />
         </Route>
       </Route>
 

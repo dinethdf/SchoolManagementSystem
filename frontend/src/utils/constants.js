@@ -44,4 +44,6 @@ export const API_ROUTES = {
   STUDENTS: '/api/people/students/',
   TEACHERS: '/api/people/teachers/',
   PARENTS: '/api/people/parents/',
+  ATTENDANCE: '/api/attendance/',
+  GRADES: '/api/grades/',
 };
