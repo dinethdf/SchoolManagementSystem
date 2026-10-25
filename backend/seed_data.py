@@ -125,10 +125,123 @@ def seed():
             'emergency_contact_phone': '+1234567890',
         }
     )
+    # 6. Create Parent User & Profile linked to student1
+    from apps.people.models import ParentProfile
+
+    parent_user, created = CustomUser.objects.get_or_create(
+        username='parent1',
+        defaults={
+            'email': 'parent1@schoolms.edu',
+            'first_name': 'Jane',
+            'last_name': 'Doe',
+            'role': CustomUser.ROLE_PARENT,
+        }
+    )
     if created:
-        print("✅ Student profile created: STU-2026-001")
+        parent_user.set_password('parentpassword123')
+        parent_user.save()
+        print("✅ Parent user created: parent1 / parentpassword123")
+
+    parent_profile, created = ParentProfile.objects.get_or_create(
+        user=parent_user,
+        defaults={
+            'occupation': 'Architect',
+            'relationship_to_child': 'Mother',
+        }
+    )
+    if created:
+        parent_profile.children.add(student_profile)
+        print("✅ Parent profile created & linked to student1")
+
+    # 7. Seed Initial Attendance Records for student1
+    from apps.attendance.models import Attendance
+    from datetime import timedelta
+
+    today = date.today()
+    sample_statuses = [
+        ('present', 'Attended on time'),
+        ('present', 'Attended on time'),
+        ('late', 'Arrived 10 minutes late due to bus traffic'),
+        ('present', 'Attended on time'),
+        ('absent', 'Medical leave - submitted note'),
+        ('present', 'Attended on time'),
+        ('present', 'Attended on time'),
+    ]
+
+    for index, (attendance_status, remark_note) in enumerate(sample_statuses):
+        attendance_day = today - timedelta(days=index)
+        attendance_record, created = Attendance.objects.get_or_create(
+            student=student_profile,
+            school_class=school_class,
+            date=attendance_day,
+            defaults={
+                'status': attendance_status,
+                'subject': subject,
+                'marked_by': teacher_user,
+                'remarks': remark_note,
+            }
+        )
+    print("✅ Seeded attendance records for student1")
+
+    # 8. Seed Initial Assessment & Grade Records
+    from apps.grades.models import Assessment, GradeRecord
+
+    # Create Midterm Assessment
+    midterm_assessment, created = Assessment.objects.get_or_create(
+        name='Midterm Examination 2026',
+        subject=subject,
+        school_class=school_class,
+        defaults={
+            'assessment_type': 'midterm',
+            'max_marks': 100,
+            'assessment_date': today - timedelta(days=14),
+            'academic_year': '2026-2027',
+            'created_by': teacher_user,
+        }
+    )
+    if created:
+        print("✅ Assessment created: Midterm Examination 2026")
+
+    # Create Quiz Assessment
+    quiz_assessment, created = Assessment.objects.get_or_create(
+        name='Quiz 1 - Linear Equations',
+        subject=subject,
+        school_class=school_class,
+        defaults={
+            'assessment_type': 'quiz',
+            'max_marks': 25,
+            'assessment_date': today - timedelta(days=7),
+            'academic_year': '2026-2027',
+            'created_by': teacher_user,
+        }
+    )
+    if created:
+        print("✅ Assessment created: Quiz 1 - Linear Equations")
+
+    # Enter marks for student1
+    midterm_grade, created = GradeRecord.objects.get_or_create(
+        assessment=midterm_assessment,
+        student=student_profile,
+        defaults={
+            'marks_obtained': 88.50,
+            'remarks': 'Great analytical reasoning and neat presentation.',
+            'marked_by': teacher_user,
+        }
+    )
+
+    quiz_grade, created = GradeRecord.objects.get_or_create(
+        assessment=quiz_assessment,
+        student=student_profile,
+        defaults={
+            'marks_obtained': 23.00,
+            'remarks': 'Excellent score on algebraic manipulation.',
+            'marked_by': teacher_user,
+        }
+    )
+    print("✅ Seeded grade records for student1")
 
     print("🎉 Database seeding completed successfully!")
 
 if __name__ == '__main__':
     seed()
+

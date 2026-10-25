@@ -49,6 +49,12 @@ urlpatterns = [
     # People App Endpoints (student profiles, teacher profiles, parent profiles)
     path('api/people/', include('apps.people.urls')),
 
+    # Attendance App Endpoints (class-level marking, student history & summaries)
+    path('api/attendance/', include('apps.attendance.urls')),
+
+    # Grades App Endpoints (assessments, bulk mark entry, report cards)
+    path('api/grades/', include('apps.grades.urls')),
+
     # Learning Demo Endpoints (standalone logic demos, no database required)
     path('api/demo/', include('apps.demo.urls')),
 ]
