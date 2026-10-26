@@ -15,6 +15,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import EmptyState from '../../components/common/EmptyState';
 import GradeLetterBadge from '../../components/common/GradeLetterBadge';
 import Modal from '../../components/common/Modal';
+import ModalFooter from '../../components/common/ModalFooter';
 import { fetchAssessments, createAssessment, bulkEnterGrades } from '../../api/grades';
 import { fetchClasses, fetchSubjects } from '../../api/classes';
 import { fetchStudents } from '../../api/students';
@@ -447,8 +448,16 @@ export default function TeacherGradesPage() {
       )}
 
       {/* Create Assessment Modal */}
-      <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} title="Create New Assessment">
-        <form onSubmit={handleCreateAssessment} className="space-y-4">
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={() => !isSubmitting && setIsCreateModalOpen(false)}
+        title="Create New Assessment"
+        description="Set the assessment details before entering student marks."
+        size="lg"
+        isLoading={isSubmitting}
+        footer={<ModalFooter onCancel={() => setIsCreateModalOpen(false)} submitFormId="create-assessment-form" submitLabel="Create Assessment" isLoading={isSubmitting} />}
+      >
+        <form id="create-assessment-form" onSubmit={handleCreateAssessment} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">Assessment Title *</label>
             <input
@@ -526,14 +535,6 @@ export default function TeacherGradesPage() {
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" type="button" onClick={() => setIsCreateModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit" isLoading={isSubmitting}>
-              Create Assessment
-            </Button>
-          </div>
         </form>
       </Modal>
     </div>

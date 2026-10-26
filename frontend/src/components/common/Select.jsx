@@ -63,6 +63,8 @@ const Select = forwardRef(function Select(
         id={name}
         name={name}
         disabled={disabled}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${name}-error` : helperText ? `${name}-helper` : undefined}
         className={`w-full px-3 py-2 border rounded-lg shadow-sm text-sm focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${borderClasses} ${disabledClasses} ${className}`}
         {...otherProps}
       >
@@ -78,14 +80,14 @@ const Select = forwardRef(function Select(
 
       {/* 3. Validation Error Message */}
       {error && (
-        <p className="mt-1 text-xs text-red-600 font-medium">
+        <p id={`${name}-error`} role="alert" className="mt-1 text-xs text-red-600 font-medium">
           {error}
         </p>
       )}
 
       {/* 4. Optional Helper Guidance Text */}
       {!error && helperText && (
-        <p className="mt-1 text-xs text-gray-500">
+        <p id={`${name}-helper`} className="mt-1 text-xs text-gray-500">
           {helperText}
         </p>
       )}

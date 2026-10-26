@@ -8,3 +8,14 @@ body,
 #root {
   height: 100%;
 }
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
