@@ -64,6 +64,13 @@ export async function fetchTeacherById(teacherId) {
   return apiResponse.data;
 }
 
+// Create a new teacher profile (Admin only)
+// Expects: { user_id, employee_id, qualification?, joining_date?, department?, specialization? }
+export async function createTeacher(teacherData) {
+  const apiResponse = await axiosInstance.post(API_ROUTES.TEACHERS, teacherData);
+  return apiResponse.data;
+}
+
 // ============================================================
 // PARENTS API
 // ============================================================

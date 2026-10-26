@@ -1,96 +1,101 @@
 /**
- * Attendance API Service
- * 
- * Provides API functions to interact with the Django attendance endpoints:
- * - POST /api/attendance/bulk/                          -> Bulk mark attendance for a class
- * - GET  /api/attendance/class/<class_id>/?date=YYYY-MM-DD -> Get class attendance records
- * - GET  /api/attendance/student/<student_id>/          -> Student attendance history (Teacher/Admin)
- * - GET  /api/attendance/student/<student_id>/summary/  -> Student attendance summary (Teacher/Admin)
- * - GET  /api/attendance/my-attendance/                 -> Logged-in student attendance history
- * - GET  /api/attendance/my-attendance/summary/         -> Logged-in student attendance summary
- * - GET  /api/attendance/my-children/                   -> Parent's children attendance
+ * Attendance System API Service
+ *
+ * Provides API functions to communicate with the Django attendance endpoints:
+ * - Teacher/Admin:
+ *   - POST   /api/attendance/bulk/                    -> Bulk mark attendance for a class
+ *   - GET    /api/attendance/class/<id>/?date=        -> View class attendance for a date
+ *   - GET    /api/attendance/student/<id>/            -> Student attendance history (teacher/admin view)
+ *   - GET    /api/attendance/student/<id>/summary/    -> Student attendance % summary (teacher/admin view)
+ * - Student:
+ *   - GET    /api/attendance/my-attendance/           -> Own attendance history
+ *   - GET    /api/attendance/my-attendance/summary/   -> Own attendance % summary
+ * - Parent:
+ *   - GET    /api/attendance/my-children/             -> All children's attendance
  */
-
 import axiosInstance from './axiosInstance';
 import { API_ROUTES } from '../utils/constants';
 
-// ============================================================
-// BULK MARK ATTENDANCE (Teacher / Admin)
-// Submits attendance statuses for all students in a class for a specific date
-// ============================================================
-export async function bulkMarkAttendance(attendanceSubmissionData) {
-  // Post data: { school_class, date, subject (optional), attendance_list: [...] }
-  const apiResponse = await axiosInstance.post(
-    `${API_ROUTES.ATTENDANCE}bulk/`,
-    attendanceSubmissionData
-  );
-  return apiResponse.data;
-}
+const BASE = API_ROUTES.ATTENDANCE; // '/api/attendance/'
 
 // ============================================================
-// FETCH CLASS ATTENDANCE BY DATE (Teacher / Admin)
-// Retrieves attendance records for a class on a specific date
+// TEACHER / ADMIN ENDPOINTS
 // ============================================================
-export async function fetchClassAttendance(classId, selectedDateString) {
-  let requestUrl = `${API_ROUTES.ATTENDANCE}class/${classId}/`;
-  if (selectedDateString) {
-    requestUrl = `${requestUrl}?date=${selectedDateString}`;
-  }
-  const apiResponse = await axiosInstance.get(requestUrl);
-  return apiResponse.data;
+
+/**
+ * Bulk mark attendance for all students in a class
+ * @param {Object} payload - { school_class: number, date: 'YYYY-MM-DD', subject?: number, attendance_list: Array<{student: number, status: string, remarks?: string}> }
+ * @returns {Promise<Object>} { success, message, records_saved, errors }
+ */
+export async function bulkMarkAttendance(payload) {
+  const response = await axiosInstance.post(`${BASE}bulk/`, payload);
+  return response.data;
 }
 
-// ============================================================
-// FETCH STUDENT ATTENDANCE HISTORY (Teacher / Admin)
-// Retrieves full attendance history for a single student
-// ============================================================
+/**
+ * Fetch attendance records for a specific class on a specific date
+ * @param {number|string} classId - School class ID
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {Promise<Object>} { success, class_name, date, total_records, attendance: [...] }
+ */
+export async function fetchClassAttendance(classId, date) {
+  const response = await axiosInstance.get(`${BASE}class/${classId}/`, {
+    params: { date },
+  });
+  return response.data;
+}
+
+/**
+ * Fetch full attendance history for a specific student (teacher/admin view)
+ * @param {number|string} studentId - Student profile ID
+ * @returns {Promise<Object>} { success, student_name, student_admission_number, total_records, attendance: [...] }
+ */
 export async function fetchStudentAttendanceHistory(studentId) {
-  const apiResponse = await axiosInstance.get(
-    `${API_ROUTES.ATTENDANCE}student/${studentId}/`
-  );
-  return apiResponse.data;
+  const response = await axiosInstance.get(`${BASE}student/${studentId}/`);
+  return response.data;
 }
 
-// ============================================================
-// FETCH STUDENT ATTENDANCE SUMMARY (Teacher / Admin)
-// Retrieves percentage and status counts for a single student
-// ============================================================
+/**
+ * Fetch attendance percentage summary for a specific student (teacher/admin view)
+ * @param {number|string} studentId - Student profile ID
+ * @returns {Promise<Object>} { success, summary: { total_days, present_days, absent_days, late_days, excused_days, attendance_percentage, student_name, student_admission_number } }
+ */
 export async function fetchStudentAttendanceSummary(studentId) {
-  const apiResponse = await axiosInstance.get(
-    `${API_ROUTES.ATTENDANCE}student/${studentId}/summary/`
-  );
-  return apiResponse.data;
+  const response = await axiosInstance.get(`${BASE}student/${studentId}/summary/`);
+  return response.data;
 }
 
 // ============================================================
-// FETCH MY ATTENDANCE HISTORY (Student)
-// Retrieves the logged-in student's personal attendance history
+// STUDENT ENDPOINTS (Own Data Only)
 // ============================================================
+
+/**
+ * Fetch the currently logged-in student's own full attendance history
+ * @returns {Promise<Object>} { success, total_records, attendance: [...] }
+ */
 export async function fetchMyAttendance() {
-  const apiResponse = await axiosInstance.get(
-    `${API_ROUTES.ATTENDANCE}my-attendance/`
-  );
-  return apiResponse.data;
+  const response = await axiosInstance.get(`${BASE}my-attendance/`);
+  return response.data;
 }
 
-// ============================================================
-// FETCH MY ATTENDANCE SUMMARY (Student)
-// Retrieves the logged-in student's percentage and attendance counts
-// ============================================================
+/**
+ * Fetch the currently logged-in student's own attendance percentage summary
+ * @returns {Promise<Object>} { success, summary: { total_days, present_days, absent_days, late_days, excused_days, attendance_percentage } }
+ */
 export async function fetchMyAttendanceSummary() {
-  const apiResponse = await axiosInstance.get(
-    `${API_ROUTES.ATTENDANCE}my-attendance/summary/`
-  );
-  return apiResponse.data;
+  const response = await axiosInstance.get(`${BASE}my-attendance/summary/`);
+  return response.data;
 }
 
 // ============================================================
-// FETCH MY CHILDREN ATTENDANCE (Parent)
-// Retrieves attendance summaries and logs for all children of logged-in parent
+// PARENT ENDPOINTS (Children's Data)
 // ============================================================
+
+/**
+ * Fetch attendance records for all children linked to the current parent
+ * @returns {Promise<Object>} { success, total_children, children: [{ student_id, student_name, admission_number, class_name, summary, attendance: [...] }] }
+ */
 export async function fetchMyChildrenAttendance() {
-  const apiResponse = await axiosInstance.get(
-    `${API_ROUTES.ATTENDANCE}my-children/`
-  );
-  return apiResponse.data;
+  const response = await axiosInstance.get(`${BASE}my-children/`);
+  return response.data;
 }

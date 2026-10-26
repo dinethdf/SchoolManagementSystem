@@ -1,6 +1,6 @@
 /**
  * Authentication Context
- * 
+ *
  * Global state provider for user authentication in our React application.
  * Provides:
  * - currentUser: Logged-in user data object

@@ -13,7 +13,7 @@ from .serializers import (
     BulkGradeRecordSerializer,
     ReportCardSerializer,
 )
-from apps.attendance.permissions import IsTeacherOrAdmin, IsStudent, IsParent
+from .permissions import IsTeacherOrAdmin, IsStudent, IsParent
 from apps.academics.models import SchoolClass, Subject
 from apps.people.models import StudentProfile, ParentProfile
 
