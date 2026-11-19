@@ -56,11 +56,13 @@ import StudentDashboard from '../pages/student';
 import StudentAttendancePage from '../pages/student/AttendancePage';
 import StudentGradesPage from '../pages/student/GradesPage';
 import StudentAssignmentsPage from '../pages/student/AssignmentsPage';
+import StudentProfilePage from '../pages/student/ProfilePage';
 
 import ParentDashboard from '../pages/parent';
 import ParentAttendancePage from '../pages/parent/AttendancePage';
 import ParentGradesPage from '../pages/parent/GradesPage';
 import ParentAssignmentsPage from '../pages/parent/AssignmentsPage';
+import ParentChildrenPage from '../pages/parent/ChildrenPage';
 
 export default function AppRoutes() {
   return (
@@ -79,9 +81,13 @@ export default function AppRoutes() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="classes" element={<ClassesPage />} />
+          <Route path="subjects" element={<ClassesPage />} />
           <Route path="students" element={<StudentsPage />} />
           <Route path="teachers" element={<TeachersPage />} />
           <Route path="parents" element={<ParentsPage />} />
+          <Route path="attendance" element={<TeacherAttendancePage />} />
+          <Route path="grades" element={<TeacherGradesPage />} />
+          <Route path="assignments" element={<TeacherAssignmentsPage />} />
         </Route>
       </Route>
 
@@ -91,6 +97,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.TEACHER]} />}>
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />
+          <Route path="classes" element={<ClassesPage />} />
           <Route path="attendance" element={<TeacherAttendancePage />} />
           <Route path="grades" element={<TeacherGradesPage />} />
           <Route path="assignments" element={<TeacherAssignmentsPage />} />
@@ -103,6 +110,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.STUDENT]} />}>
         <Route path="/student" element={<StudentLayout />}>
           <Route index element={<StudentDashboard />} />
+          <Route path="profile" element={<StudentProfilePage />} />
           <Route path="attendance" element={<StudentAttendancePage />} />
           <Route path="grades" element={<StudentGradesPage />} />
           <Route path="assignments" element={<StudentAssignmentsPage />} />
@@ -115,6 +123,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={[USER_ROLES.PARENT]} />}>
         <Route path="/parent" element={<ParentLayout />}>
           <Route index element={<ParentDashboard />} />
+          <Route path="children" element={<ParentChildrenPage />} />
           <Route path="attendance" element={<ParentAttendancePage />} />
           <Route path="grades" element={<ParentGradesPage />} />
           <Route path="assignments" element={<ParentAssignmentsPage />} />

@@ -182,7 +182,7 @@ export default function DashboardLayout({
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    end={item.exact !== false}
+                    end={item.exact === true}
                     onClick={() => setIsMobileSidebarOpen(false)}
                     className={function ({ isActive }) {
                       if (isActive) {

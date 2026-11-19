@@ -15,6 +15,9 @@ export default function AdminLayout() {
     { label: 'Students', path: '/admin/students', icon: '🎓' },
     { label: 'Teachers', path: '/admin/teachers', icon: '👨‍🏫' },
     { label: 'Parents', path: '/admin/parents', icon: '👨‍👩‍👧' },
+    { label: 'Daily Attendance', path: '/admin/attendance', icon: '📅' },
+    { label: 'Grades & Results', path: '/admin/grades', icon: '📝' },
+    { label: 'Assignments', path: '/admin/assignments', icon: '📚' },
   ];
 
   return (
