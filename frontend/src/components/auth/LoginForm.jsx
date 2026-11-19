@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../hooks/useAuth';
 import Input from '../common/Input';
 import Button from '../common/Button';
+import QuickLoginSection from './QuickLoginSection';
 import { USER_ROLES } from '../../utils/constants';
 
 export default function LoginForm() {
@@ -38,6 +39,7 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -45,6 +47,17 @@ export default function LoginForm() {
       password: '',
     },
   });
+
+  // ============================================================
+  // FILL DEMO CREDENTIALS HANDLER
+  // Called when user clicks "Fill" on any demo role card in QuickLoginSection.
+  // Populates the username and password inputs so the user can test normal submit.
+  // ============================================================
+  function handleFillCredentials(demoUsername, demoPassword) {
+    setValue('username', demoUsername, { shouldValidate: true });
+    setValue('password', demoPassword, { shouldValidate: true });
+    setErrorMessage('');
+  }
 
   // ============================================================
   // FORM SUBMISSION HANDLER
@@ -174,6 +187,9 @@ export default function LoginForm() {
           Sign In
         </Button>
       </div>
+
+      {/* Quick Login Section for instant role testing during presentations */}
+      <QuickLoginSection onFillCredentials={handleFillCredentials} />
     </form>
   );
 }

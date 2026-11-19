@@ -73,6 +73,11 @@ axiosInstance.interceptors.response.use(
 
       const refreshToken = localStorage.getItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN);
 
+      // If user is in a temporary demo session, skip backend token refresh
+      if (refreshToken && refreshToken.startsWith('demo-refresh-token-')) {
+        return Promise.reject(errorResponse);
+      }
+
       if (refreshToken && refreshToken !== 'undefined' && refreshToken !== 'null') {
         try {
           // Attempt to refresh the access token

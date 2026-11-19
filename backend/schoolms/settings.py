@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'apps.people.apps.PeopleConfig',                  # Students, teachers, and parent profiles
     'apps.attendance.apps.AttendanceConfig',          # Attendance tracking system
     'apps.grades.apps.GradesConfig',                  # Assessment & grade management
+    'apps.assignments.apps.AssignmentsConfig',        # Homework and assignments management
     'apps.demo.apps.DemoConfig',                      # Learning samples and demos (no DB required)
 ]
 

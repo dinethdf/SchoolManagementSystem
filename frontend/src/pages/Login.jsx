@@ -47,31 +47,10 @@ export default function Login() {
       </div>
 
       {/* 2. Login Card Container */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg px-4">
         <div className="bg-white py-8 px-6 shadow-md rounded-xl sm:px-10 border border-gray-100">
-          {/* Render the interactive Login Form */}
+          {/* Render the interactive Login Form (includes form fields and Quick Login role cards) */}
           <LoginForm />
-
-          {/* Quick Demo Test Information Box */}
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              System Roles Available:
-            </h3>
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-              <div className="bg-gray-50 p-2 rounded border border-gray-200">
-                <span className="font-semibold text-indigo-600">Admin:</span> Full Control
-              </div>
-              <div className="bg-gray-50 p-2 rounded border border-gray-200">
-                <span className="font-semibold text-emerald-600">Teacher:</span> Classes & Attendance
-              </div>
-              <div className="bg-gray-50 p-2 rounded border border-gray-200">
-                <span className="font-semibold text-blue-600">Student:</span> Profile & Grades
-              </div>
-              <div className="bg-gray-50 p-2 rounded border border-gray-200">
-                <span className="font-semibold text-purple-600">Parent:</span> Child Progress
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

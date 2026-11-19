@@ -50,14 +50,17 @@ import ParentsPage from '../pages/admin/ParentsPage';
 import TeacherDashboard from '../pages/teacher';
 import TeacherAttendancePage from '../pages/teacher/AttendancePage';
 import TeacherGradesPage from '../pages/teacher/GradesPage';
+import TeacherAssignmentsPage from '../pages/teacher/AssignmentsPage';
 
 import StudentDashboard from '../pages/student';
 import StudentAttendancePage from '../pages/student/AttendancePage';
 import StudentGradesPage from '../pages/student/GradesPage';
+import StudentAssignmentsPage from '../pages/student/AssignmentsPage';
 
 import ParentDashboard from '../pages/parent';
 import ParentAttendancePage from '../pages/parent/AttendancePage';
 import ParentGradesPage from '../pages/parent/GradesPage';
+import ParentAssignmentsPage from '../pages/parent/AssignmentsPage';
 
 export default function AppRoutes() {
   return (
@@ -90,6 +93,7 @@ export default function AppRoutes() {
           <Route index element={<TeacherDashboard />} />
           <Route path="attendance" element={<TeacherAttendancePage />} />
           <Route path="grades" element={<TeacherGradesPage />} />
+          <Route path="assignments" element={<TeacherAssignmentsPage />} />
         </Route>
       </Route>
 
@@ -101,6 +105,7 @@ export default function AppRoutes() {
           <Route index element={<StudentDashboard />} />
           <Route path="attendance" element={<StudentAttendancePage />} />
           <Route path="grades" element={<StudentGradesPage />} />
+          <Route path="assignments" element={<StudentAssignmentsPage />} />
         </Route>
       </Route>
 
@@ -112,6 +117,7 @@ export default function AppRoutes() {
           <Route index element={<ParentDashboard />} />
           <Route path="attendance" element={<ParentAttendancePage />} />
           <Route path="grades" element={<ParentGradesPage />} />
+          <Route path="assignments" element={<ParentAssignmentsPage />} />
         </Route>
       </Route>
 

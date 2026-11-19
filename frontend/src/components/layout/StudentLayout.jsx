@@ -13,6 +13,7 @@ export default function StudentLayout() {
     { label: 'My Profile', path: '/student/profile', icon: '👤' },
     { label: 'My Attendance', path: '/student/attendance', icon: '📅' },
     { label: 'My Grades', path: '/student/grades', icon: '📝' },
+    { label: 'My Assignments', path: '/student/assignments', icon: '📚' },
   ];
 
   return (

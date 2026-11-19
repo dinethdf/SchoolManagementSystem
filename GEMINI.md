@@ -231,19 +231,19 @@ frontend/src/
 
 | # | Feature | Status |
 |---|---|---|
-| 1 | Authentication & Authorization | 🟢 Backend Implemented |
-| 2 | User Management | 🟢 Backend Implemented |
-| 3 | Class & Subject Management | 🟢 Backend Implemented |
-| 4 | Student Management | 🟢 Backend Implemented |
-| 5 | Attendance System | 🟡 Needs Input |
-| 6 | Grades / Result Management | 🟢 MVP Planned |
-| 7 | Role-specific Dashboards | 🟡 Deferred |
-| 8 | Assignments / Homework | 🟢 Post-MVP |
-| 9 | Fee Management | 🟢 Post-MVP |
-| 10 | Announcements | 🟢 Post-MVP |
-| 11 | Reports & Analytics | 🟢 Post-MVP |
-| 12 | Notifications (email + in-app) | 🟢 Post-MVP |
-| 13 | AI Performance Summary | 🟢 Post-MVP |
+| 1 | Authentication & Authorization | 🟢 Implemented (Backend + Frontend) |
+| 2 | User Management | 🟢 Implemented (Backend + Frontend) |
+| 3 | Class & Subject Management | 🟢 Implemented (Backend + Frontend) |
+| 4 | Student Management | 🟢 Implemented (Backend + Frontend) |
+| 5 | Attendance System | 🟢 Implemented (Backend + Frontend) |
+| 6 | Grades / Result Management | 🟢 Implemented (Backend + Frontend) |
+| 7 | Role-specific Dashboards | 🟢 Implemented (Backend + Frontend) |
+| 8 | Assignments / Homework | 🟢 Implemented (Backend + Frontend) |
+| 9 | Fee Management | 🟢 Post-MVP Planned |
+| 10 | Announcements | 🟢 Post-MVP Planned |
+| 11 | Reports & Analytics | 🟢 Post-MVP Planned |
+| 12 | Notifications (email + in-app) | 🟢 Post-MVP Planned |
+| 13 | AI Performance Summary | 🟢 Post-MVP Planned |
 | - | Timetable / Messaging | 🔴 Removed |
 
 ---

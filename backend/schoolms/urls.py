@@ -55,6 +55,9 @@ urlpatterns = [
     # Grades App Endpoints (assessments, bulk mark entry, report cards)
     path('api/grades/', include('apps.grades.urls')),
 
+    # Assignments App Endpoints (homework creation, submissions, and grading)
+    path('api/assignments/', include('apps.assignments.urls')),
+
     # Learning Demo Endpoints (standalone logic demos, no database required)
     path('api/demo/', include('apps.demo.urls')),
 ]

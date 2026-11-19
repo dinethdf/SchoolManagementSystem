@@ -13,6 +13,7 @@ export default function ParentLayout() {
     { label: 'My Children', path: '/parent/children', icon: '👨‍👩‍👧' },
     { label: 'Attendance Records', path: '/parent/attendance', icon: '📅' },
     { label: 'Academic Reports', path: '/parent/grades', icon: '📝' },
+    { label: 'Homework & Tasks', path: '/parent/assignments', icon: '📚' },
   ];
 
   return (

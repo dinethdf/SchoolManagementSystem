@@ -360,6 +360,138 @@ async function runSystemSimulation() {
   }
 
   // -------------------------------------------------------------------
+  // Scenario 7: Phase 7 Assignments & Homework Full Lifecycle
+  // -------------------------------------------------------------------
+  printHeader('Scenario 7: Assignments & Homework Lifecycle (Teacher -> Student -> Parent)');
+  try {
+    const teacherToken = await loginUser('teacher1', 'teacherpassword123');
+    const studentToken = await loginUser('student1', 'studentpassword123');
+    const parentToken = await loginUser('parent1', 'parentpassword123');
+
+    // 1. Teacher creates a new assignment
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 5);
+    const dueDateStr = dueDate.toISOString().split('T')[0];
+
+    const createAssignRes = await fetch(`${BACKEND_URL}/api/assignments/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${teacherToken}`,
+      },
+      body: JSON.stringify({
+        title: 'Simulation Calculus Problem Set',
+        description: 'Prove the derivative rules and solve problems 1-10.',
+        assignment_type: 'homework',
+        school_class: 1,
+        subject: 1,
+        max_marks: 25,
+        due_date: dueDateStr,
+      }),
+    });
+    const createAssignData = await createAssignRes.json();
+    const newAssignment = createAssignData.assignment || createAssignData.data;
+
+    countTest(
+      createAssignRes.status === 201 && newAssignment?.id,
+      `Teacher published assignment: "${newAssignment?.title}" [Max Marks: ${newAssignment?.max_marks}]`,
+      'Failed to create assignment',
+      createAssignData
+    );
+
+    // 2. Student views personal assignments and sees the new task
+    const studentAssignmentsRes = await fetch(`${BACKEND_URL}/api/assignments/my-assignments/`, {
+      headers: { Authorization: `Bearer ${studentToken}` },
+    });
+    const studentAssignmentsData = await studentAssignmentsRes.json();
+    const studentList = studentAssignmentsData.data || studentAssignmentsData.assignments || [];
+    const foundTask = studentList.find((item) => item.id === newAssignment?.id);
+
+    countTest(
+      studentAssignmentsRes.status === 200 && foundTask && foundTask.submission_status === 'pending',
+      `Student retrieved homework roster: Found "${foundTask?.title}" (Status: Pending)`,
+      'Student could not find the new assignment in roster',
+      studentAssignmentsData
+    );
+
+    // 3. Student submits answer text
+    const submitRes = await fetch(`${BACKEND_URL}/api/assignments/${newAssignment?.id}/submit/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${studentToken}`,
+      },
+      body: JSON.stringify({
+        submission_text: 'Derivative proofs: d/dx[x^n] = n*x^(n-1). Step 1 through 10 completed with full working.',
+      }),
+    });
+    const submitData = await submitRes.json();
+    const submissionObj = submitData.submission || submitData.data;
+
+    countTest(
+      submitRes.status === 200 && submissionObj?.status === 'submitted',
+      `Student submitted written solution: Status "${submissionObj?.status}" recorded`,
+      'Student submission failed',
+      submitData
+    );
+
+    // 4. Teacher reviews submissions and enters grade with feedback
+    const submissionsListRes = await fetch(`${BACKEND_URL}/api/assignments/${newAssignment?.id}/submissions/`, {
+      headers: { Authorization: `Bearer ${teacherToken}` },
+    });
+    const submissionsListData = await submissionsListRes.json();
+    const teacherSubList = submissionsListData.submissions || submissionsListData.data || [];
+    const studentSubRecord = teacherSubList.find((sub) => sub.student_id === 1 || sub.student === 1);
+
+    countTest(
+      submissionsListRes.status === 200 && teacherSubList.length > 0,
+      `Teacher retrieved submissions list: ${teacherSubList.length} submission(s) loaded`,
+      'Teacher failed to load submissions list',
+      submissionsListData
+    );
+
+    // Grade the submission
+    const gradeRes = await fetch(`${BACKEND_URL}/api/assignments/${newAssignment?.id}/grade/${studentSubRecord?.id}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${teacherToken}`,
+      },
+      body: JSON.stringify({
+        marks_obtained: 24.5,
+        teacher_feedback: 'Outstanding mathematical rigor and clear proof steps!',
+      }),
+    });
+    const gradeData = await gradeRes.json();
+    const gradedSub = gradeData.submission || gradeData.data;
+
+    countTest(
+      gradeRes.status === 200 && Number(gradedSub?.marks_obtained) === 24.5 && gradedSub?.status === 'graded',
+      `Teacher graded submission: ${gradedSub?.marks_obtained}/${newAssignment?.max_marks} marks awarded (Status: Graded)`,
+      'Teacher failed to grade submission',
+      gradeData
+    );
+
+    // 5. Parent verifies child's updated homework status
+    const parentChildrenRes = await fetch(`${BACKEND_URL}/api/assignments/my-children/`, {
+      headers: { Authorization: `Bearer ${parentToken}` },
+    });
+    const parentChildrenData = await parentChildrenRes.json();
+    const childrenList = parentChildrenData.children || parentChildrenData.data || [];
+    const firstChild = childrenList[0];
+    const childAssignedTask = firstChild?.assignments?.find((task) => task.assignment_id === newAssignment?.id);
+
+    countTest(
+      parentChildrenRes.status === 200 && childAssignedTask?.status === 'graded' && Number(childAssignedTask?.marks_obtained) === 24.5,
+      `Parent verified child homework: "${childAssignedTask?.title}" graded with ${childAssignedTask?.marks_obtained} marks`,
+      'Parent could not verify child graded homework',
+      parentChildrenData
+    );
+  } catch (err) {
+    countTest(false, '', 'Assignments lifecycle scenario failed with exception', err.message);
+  }
+
+  // -------------------------------------------------------------------
   // SUMMARY REPORT
   // -------------------------------------------------------------------
   printHeader('Simulation Summary & Viva Readiness');

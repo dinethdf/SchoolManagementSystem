@@ -11,7 +11,7 @@
  */
 import React, { createContext, useState, useEffect } from 'react';
 import { loginUser as callLoginAPI, getCurrentUser } from '../api/auth';
-import { LOCAL_STORAGE_KEYS } from '../utils/constants';
+import { LOCAL_STORAGE_KEYS, DEMO_ACCOUNTS } from '../utils/constants';
 
 export const AuthContext = createContext(null);
 
@@ -33,15 +33,40 @@ export function AuthProvider({ children }) {
         existingAccessToken !== 'null'
       ) {
         try {
-          // Fetch current user's profile using the stored access token
+          // If this is a temporary demo session, load the saved demo user data
+          if (existingAccessToken.startsWith('demo-token-')) {
+            const savedUserDataString = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_DATA);
+            if (savedUserDataString) {
+              const parsedUserData = JSON.parse(savedUserDataString);
+              setCurrentUser(parsedUserData);
+              setIsLoading(false);
+              return;
+            }
+          }
+
+          // Otherwise, fetch current user's profile from Django using the token
           const userProfileData = await getCurrentUser();
           setCurrentUser(userProfileData);
         } catch (error) {
-          console.error('Stored session expired or invalid. Clearing tokens.', error);
-          localStorage.removeItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN);
-          localStorage.removeItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN);
-          localStorage.removeItem(LOCAL_STORAGE_KEYS.USER_DATA);
-          setCurrentUser(null);
+          // If backend is not reachable but user had a demo session, preserve it
+          const savedUserDataString = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_DATA);
+          if (savedUserDataString && existingAccessToken.startsWith('demo-token-')) {
+            try {
+              const parsedUserData = JSON.parse(savedUserDataString);
+              setCurrentUser(parsedUserData);
+            } catch (parseError) {
+              localStorage.removeItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN);
+              localStorage.removeItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN);
+              localStorage.removeItem(LOCAL_STORAGE_KEYS.USER_DATA);
+              setCurrentUser(null);
+            }
+          } else {
+            console.error('Stored session expired or invalid. Clearing tokens.', error);
+            localStorage.removeItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN);
+            localStorage.removeItem(LOCAL_STORAGE_KEYS.USER_DATA);
+            setCurrentUser(null);
+          }
         }
       } else {
         // Clear any corrupted values
@@ -109,6 +134,47 @@ export function AuthProvider({ children }) {
   }
 
   // ============================================================
+  // QUICK LOGIN HANDLER (Temporary for Testing / Demos)
+  // Allows examiners, professors, and developers to log in instantly
+  // as any system role without manually typing passwords.
+  // ============================================================
+  function handleQuickLogin(targetRole) {
+    // 1. Normalize the role string to lowercase
+    const normalizedRole = targetRole ? targetRole.toLowerCase() : '';
+
+    // 2. Find the pre-configured demo account for this role
+    const demoAccount = DEMO_ACCOUNTS[normalizedRole];
+
+    if (!demoAccount) {
+      throw new Error(`Role "${targetRole}" is not recognized for quick login.`);
+    }
+
+    // 3. Construct a standard user profile object matching the backend format
+    const demoUserProfile = {
+      id: demoAccount.id,
+      username: demoAccount.username,
+      email: demoAccount.email,
+      first_name: demoAccount.first_name,
+      last_name: demoAccount.last_name,
+      role: demoAccount.role,
+    };
+
+    // 4. Create dummy tokens to satisfy route guards and API client checks
+    const mockAccessToken = 'demo-token-' + demoAccount.role;
+    const mockRefreshToken = 'demo-refresh-token-' + demoAccount.role;
+
+    // 5. Save the session tokens and user data to localStorage
+    localStorage.setItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN, mockAccessToken);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN, mockRefreshToken);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.USER_DATA, JSON.stringify(demoUserProfile));
+
+    // 6. Update the React authentication state
+    setCurrentUser(demoUserProfile);
+
+    return demoUserProfile;
+  }
+
+  // ============================================================
   // LOGOUT HANDLER
   // ============================================================
   function handleLogout() {
@@ -125,6 +191,7 @@ export function AuthProvider({ children }) {
     isLoading: isLoading,
     isAuthenticated: isAuthenticated,
     loginUser: handleLogin,
+    quickLoginUser: handleQuickLogin,
     logoutUser: handleLogout,
   };
 

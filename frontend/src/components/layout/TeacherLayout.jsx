@@ -13,6 +13,7 @@ export default function TeacherLayout() {
     { label: 'My Classes', path: '/teacher/classes', icon: '🏫' },
     { label: 'Daily Attendance', path: '/teacher/attendance', icon: '📅' },
     { label: 'Grades & Results', path: '/teacher/grades', icon: '📝' },
+    { label: 'Assignments', path: '/teacher/assignments', icon: '📚' },
   ];
 
   return (
