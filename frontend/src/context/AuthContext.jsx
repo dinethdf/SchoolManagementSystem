@@ -46,7 +46,8 @@ export function AuthProvider({ children }) {
 
           // Otherwise, fetch current user's profile from Django using the token
           const userProfileData = await getCurrentUser();
-          setCurrentUser(userProfileData);
+          const actualUser = userProfileData?.user || userProfileData;
+          setCurrentUser(actualUser);
         } catch (error) {
           // If backend is not reachable but user had a demo session, preserve it
           const savedUserDataString = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_DATA);
@@ -123,7 +124,8 @@ export function AuthProvider({ children }) {
 
     // Fallback: fetch from /api/auth/me/ if user wasn't included in login response
     if (!userProfile) {
-      userProfile = await getCurrentUser();
+      const meResponse = await getCurrentUser();
+      userProfile = meResponse?.user || meResponse;
     }
 
     // 6. Save user profile to localStorage and React state
@@ -134,11 +136,11 @@ export function AuthProvider({ children }) {
   }
 
   // ============================================================
-  // QUICK LOGIN HANDLER (Temporary for Testing / Demos)
-  // Allows examiners, professors, and developers to log in instantly
-  // as any system role without manually typing passwords.
+  // QUICK LOGIN HANDLER (Testing / Viva Presentations)
+  // Automatically logs in as the pre-configured role using real backend
+  // credentials, generating a genuine JWT token so all API calls work.
   // ============================================================
-  function handleQuickLogin(targetRole) {
+  async function handleQuickLogin(targetRole) {
     // 1. Normalize the role string to lowercase
     const normalizedRole = targetRole ? targetRole.toLowerCase() : '';
 
@@ -149,29 +151,36 @@ export function AuthProvider({ children }) {
       throw new Error(`Role "${targetRole}" is not recognized for quick login.`);
     }
 
-    // 3. Construct a standard user profile object matching the backend format
-    const demoUserProfile = {
-      id: demoAccount.id,
-      username: demoAccount.username,
-      email: demoAccount.email,
-      first_name: demoAccount.first_name,
-      last_name: demoAccount.last_name,
-      role: demoAccount.role,
-    };
+    try {
+      // Perform genuine login via backend JWT auth to get real tokens
+      return await handleLogin({
+        username: demoAccount.username,
+        password: demoAccount.password,
+      });
+    } catch (apiError) {
+      console.warn('Backend login for quick login failed, using offline fallback:', apiError);
 
-    // 4. Create dummy tokens to satisfy route guards and API client checks
-    const mockAccessToken = 'demo-token-' + demoAccount.role;
-    const mockRefreshToken = 'demo-refresh-token-' + demoAccount.role;
+      // Offline fallback: Construct a standard user profile object
+      const demoUserProfile = {
+        id: demoAccount.id,
+        username: demoAccount.username,
+        email: demoAccount.email,
+        first_name: demoAccount.first_name,
+        last_name: demoAccount.last_name,
+        full_name: `${demoAccount.first_name} ${demoAccount.last_name}`,
+        role: demoAccount.role,
+      };
 
-    // 5. Save the session tokens and user data to localStorage
-    localStorage.setItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN, mockAccessToken);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN, mockRefreshToken);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.USER_DATA, JSON.stringify(demoUserProfile));
+      const mockAccessToken = 'demo-token-' + demoAccount.role;
+      const mockRefreshToken = 'demo-refresh-token-' + demoAccount.role;
 
-    // 6. Update the React authentication state
-    setCurrentUser(demoUserProfile);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN, mockAccessToken);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN, mockRefreshToken);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.USER_DATA, JSON.stringify(demoUserProfile));
+      setCurrentUser(demoUserProfile);
 
-    return demoUserProfile;
+      return demoUserProfile;
+    }
   }
 
   // ============================================================

@@ -51,6 +51,7 @@ export async function registerUser(registrationData) {
 export async function getCurrentUser() {
   const apiResponse = await axiosInstance.get(API_ROUTES.AUTH_ME);
 
-  // The backend returns the user's profile data (id, username, email, role, etc.)
-  return apiResponse.data;
+  // The backend returns { success: true, user: { ... } }
+  // Extract and return the user object directly so consumers get user properties (id, username, role, etc.)
+  return apiResponse.data?.user || apiResponse.data;
 }

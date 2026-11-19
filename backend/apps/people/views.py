@@ -51,6 +51,7 @@ class StudentListCreateView(APIView):
         return Response({
             'success': True,
             'total_count': students_query.count(),
+            'data': serializer.data,
             'students': serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -199,6 +200,7 @@ class TeacherListCreateView(APIView):
         return Response({
             'success': True,
             'total_count': teachers.count(),
+            'data': serializer.data,
             'teachers': serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -306,6 +308,7 @@ class ParentListCreateView(APIView):
         return Response({
             'success': True,
             'total_count': parents.count(),
+            'data': serializer.data,
             'parents': serializer.data
         }, status=status.HTTP_200_OK)
 

@@ -50,10 +50,10 @@ export default function QuickLoginSection({ onFillCredentials }) {
       setActiveLoggingInRole(account.role);
 
       // Perform the quick login in AuthContext
-      quickLoginUser(account.role);
+      await quickLoginUser(account.role);
 
       // Display a friendly confirmation toast
-      toast.success(`Logged in as ${account.title} (Demo Mode)!`);
+      toast.success(`Logged in as ${account.title}!`);
 
       // Redirect immediately to the role's designated dashboard page
       navigate(account.dashboardRoute, { replace: true });

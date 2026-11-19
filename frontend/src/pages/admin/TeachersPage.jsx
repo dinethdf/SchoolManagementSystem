@@ -87,16 +87,25 @@ export default function TeachersPage() {
   } = teacherForm;
   const password = watch('password');
 
-  const teacherList = Array.isArray(teachersQuery.data)
-    ? teachersQuery.data
-    : teachersQuery.data?.teachers || [];
+  let teacherList = [];
+  if (Array.isArray(teachersQuery.data)) {
+    teacherList = teachersQuery.data;
+  } else if (teachersQuery.data?.teachers && Array.isArray(teachersQuery.data.teachers)) {
+    teacherList = teachersQuery.data.teachers;
+  } else if (teachersQuery.data?.data && Array.isArray(teachersQuery.data.data)) {
+    teacherList = teachersQuery.data.data;
+  }
 
   const columns = [
     {
       key: 'name',
       header: 'Faculty Member',
       render: (row) => {
-        const name = row.user?.full_name || row.user?.username || 'Teacher';
+        const name =
+          row.user?.full_name ||
+          (row.user?.first_name && row.user?.last_name
+            ? `${row.user.first_name} ${row.user.last_name}`
+            : row.user?.username || 'Teacher');
         return (
           <div className="flex items-center space-x-3">
             <AvatarBadge name={name} size="small" roleColor="emerald" />
